@@ -76,7 +76,7 @@ async function queryFonts() {
       usedFonts.add(font)
   }
 
-  data.value = [...usedFonts].map(font => {
+  data.value = [...usedFonts].toSorted().map(font => {
     const providers = ((fonts.name_to_idxes as Record<string, number[]>)[font] ?? [])
       .map(idx => fonts.fonts[idx])
     return {
