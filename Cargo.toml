@@ -1,0 +1,13 @@
+[package]
+name = "preprocessor"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "preprocess"
+path = "preprocessor/main.rs"
+
+[dependencies]
+rusqlite = { version = "0.36", features = ["bundled"] }
+ttf-parser = "0.25"
+walkdir = "2"
