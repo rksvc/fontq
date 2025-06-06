@@ -56,7 +56,8 @@ async function queryFonts() {
           console.log(`invalid ASS line: ${line}`)
           continue
         }
-        styleToFont.set(parts[0].trim(), parts[1].trim())
+        const font = parts[1].trim()
+        styleToFont.set(parts[0].trim(), font.startsWith('@') ? font.slice('@'.length) : font)
       } else if (line.startsWith('Dialogue:')) {
         const arr = line.slice('Dialogue:'.length).split(',')
         const parts = [...arr.splice(0, 9), arr.join(',')]
@@ -65,8 +66,10 @@ async function queryFonts() {
           continue
         }
         usedStyles.add(parts[3].trim())
-        for (const match of parts[9].matchAll(/\{.*\\fn(.+?)(?:\}|\\.*\})/g))
-          usedFonts.add(match[1])
+        for (const match of parts[9].matchAll(/\{.*\\fn(.+?)(?:\}|\\.*\})/g)) {
+          const font = match[1]
+          usedFonts.add(font.startsWith('@') ? font.slice('@'.length) : font)
+        }
       }
     }
   }
