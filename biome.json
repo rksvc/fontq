@@ -12,13 +12,6 @@
       "src/*.vue"
     ]
   },
-  "linter": {
-    "rules": {
-      "suspicious": {
-        "noExplicitAny": "off"
-      }
-    }
-  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
