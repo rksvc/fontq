@@ -35,7 +35,7 @@ var (
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Println("usage: preprocess ./font.db")
+		fmt.Println("usage: generate ./fonts.db")
 		return
 	}
 	db, err := sql.Open("sqlite3", os.Args[1])
