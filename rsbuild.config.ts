@@ -4,7 +4,7 @@ import { pluginVue } from '@rsbuild/plugin-vue'
 export default defineConfig({
   plugins: [pluginVue()],
   html: {
-    title: 'FQuery',
+    title: 'FontQ',
     inject: 'body',
   },
   output: {
