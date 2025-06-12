@@ -103,7 +103,7 @@ async function queryFonts() {
 
 <template>
   <n-config-provider :theme="theme">
-    <div style="padding: 2em 10em; justify-items: center;">
+    <div class="container" style="justify-items: center;">
       <n-upload accept=".ass" multiple :file-list="files" @change="({ fileList }) => files = fileList">
         <n-upload-dragger>
           <div style="margin-bottom: .5em">
@@ -144,3 +144,17 @@ async function queryFonts() {
     <n-global-style />
   </n-config-provider>
 </template>
+
+<style scoped>
+@media (orientation: landscape) {
+  .container {
+    padding: 2em 10em;
+  }
+}
+
+@media (orientation: portrait) {
+  .container {
+    padding: 2em;
+  }
+}
+</style>

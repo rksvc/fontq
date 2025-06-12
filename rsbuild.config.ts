@@ -11,5 +11,6 @@ export default defineConfig({
     cleanDistPath: process.env.NODE_ENV === 'production',
     legalComments: 'none',
     inlineScripts: true,
+    inlineStyles: true,
   },
 })
