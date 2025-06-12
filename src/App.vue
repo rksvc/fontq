@@ -66,9 +66,10 @@ async function queryFonts() {
           continue
         }
         usedStyles.add(parts[3].trim())
-        for (const match of parts[9].matchAll(/\{.*\\fn(.+?)(?:\}|\\.*\})/g)) {
+        for (const match of parts[9].matchAll(/\{.*?\\fn(.*?)(?=\\|\})/g)) {
           const font = match[1].trim()
-          usedFonts.add(font.startsWith('@') ? font.slice('@'.length) : font)
+          if (font)
+            usedFonts.add(font.startsWith('@') ? font.slice('@'.length) : font)
         }
       }
     }
