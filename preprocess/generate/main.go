@@ -35,13 +35,14 @@ var (
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Println("usage: generate ./fonts.db")
+		println("usage: generate ./fonts.db")
 		return
 	}
 	db, err := sql.Open("sqlite3", os.Args[1])
 	if err != nil {
 		panic(err)
 	}
+	defer db.Close()
 
 	rows, err := db.Query(`
 		select
@@ -133,11 +134,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer f.Close()
 	err = json.NewEncoder(f).Encode(result)
-	if err != nil {
-		panic(err)
-	}
-	err = f.Close()
 	if err != nil {
 		panic(err)
 	}
