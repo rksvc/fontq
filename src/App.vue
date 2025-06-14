@@ -1,54 +1,17 @@
 <script setup lang="ts">
-import { CloudUploadOutline, SearchOutline, TrashOutline } from '@vicons/ionicons5'
-import { type DataTableColumns, type DataTableRowKey, NButton, NButtonGroup, NConfigProvider, NDataTable, NDivider, NGlobalStyle, NIcon, NText, NUpload, NUploadDragger, type UploadFileInfo, darkTheme } from 'naive-ui'
-import { h, ref } from 'vue'
+import { CloseOutline, CloudUploadOutline } from '@vicons/ionicons5'
+import { computedAsync } from '@vueuse/core'
+import { ref } from 'vue'
 import fonts from '../fonts.json'
 
-const theme = ref(window.matchMedia('(prefers-color-scheme: dark)').matches ? darkTheme : null)
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-  theme.value = event.matches ? darkTheme : null
-})
+const assFiles = ref<File[]>([])
 
-type RowData = {
-  key: string
-  font: string
-  size: string
-  children?: RowData[]
-}
-
-const loading = ref(false)
-const files = ref<UploadFileInfo[]>([])
-const data = ref<RowData[]>([])
-const expandedRowKeys = ref<DataTableRowKey[]>([])
-const columns: DataTableColumns<RowData> = [
-  {
-    title: 'Required Font',
-    key: 'font',
-    render(row: RowData) {
-      return row.children == null
-        ? h('a', {
-          target: '_blank',
-          href: `https://pan.acgrip.com/超级字体整合包 XZ/完整包/${row.font}`,
-          style: 'color: green',
-          innerHTML: row.font
-        })
-        : row.font
-    }
-  },
-  {
-    title: 'File Size',
-    key: 'size'
-  }
-]
-
-async function queryFonts() {
-  loading.value = true
+const requiredFonts = computedAsync(async () => {
   const styleToFont = new Map<string, string>()
   const usedStyles = new Set<string>()
   const usedFonts = new Set<string>()
-  for (const file of files.value) {
-    if (!file.file) continue
-    const text = await file.file.text()
+  for (const file of assFiles.value) {
+    const text = await file.text()
     for (const line of text.split('\n')) {
       if (line.startsWith('Style:')) {
         const parts = line.slice('Style:'.length).split(',', 2)
@@ -80,81 +43,176 @@ async function queryFonts() {
       usedFonts.add(font)
   }
 
-  data.value = [...usedFonts].toSorted().map(font => {
-    const providers = ((fonts.name_to_idxes as Record<string, number[]>)[font] ?? [])
-      .map(idx => fonts.fonts[idx])
-    return {
-      key: font,
-      font,
-      size: '',
-      children: providers
+  return [...usedFonts]
+    .toSorted()
+    .map(name => ({
+      name,
+      providers: ((fonts.name_to_idxes as Record<string, number[]>)[name] ?? [])
+        .map(idx => fonts.fonts[idx])
         .toSorted((a, b) => a.size - b.size)
-        .map(({ path, size }) => ({
-          key: `${font}#${path}`,
-          font: path,
-          size: `${(size / 1024 / 1024).toFixed(2)}MB`
-        }))
+    }))
+})
+
+function onDrop(evt: DragEvent) {
+  evt.preventDefault();
+  if (!evt.dataTransfer) return
+  const files: File[] = []
+  for (let i = 0; i < evt.dataTransfer.items.length; i++) {
+    const item = evt.dataTransfer.items[i];
+    if (item.kind === 'file') {
+      const file = item.getAsFile();
+      if (file?.name.endsWith('.ass'))
+        files.push(file)
     }
-  })
-  expandedRowKeys.value = data.value.map(({ key }) => key)
-  loading.value = false
+  }
+  assFiles.value = files
+}
+
+function onInputChange(evt: Event) {
+  const input = evt.target as HTMLInputElement
+  if (!input.files) return
+  const files: File[] = []
+  for (let i = 0; i < input.files.length; i++)
+    files.push(input.files[i])
+  assFiles.value = files
 }
 </script>
 
 <template>
-  <n-config-provider :theme="theme">
-    <div class="container" style="justify-items: center;">
-      <n-upload accept=".ass" multiple :file-list="files" @change="({ fileList }) => files = fileList">
-        <n-upload-dragger>
-          <div style="margin-bottom: .5em">
-            <n-icon size="48" :depth="3">
-              <CloudUploadOutline />
-            </n-icon>
-          </div>
-          <n-text>
-            Drag and drop ASS files to here to upload.
-          </n-text>
-        </n-upload-dragger>
-      </n-upload>
-
-      <n-button-group style="margin-top: .7em; margin-bottom: 1em;">
-        <n-button ghost @click="files = []">
-          <template #icon>
-            <n-icon>
-              <TrashOutline />
-            </n-icon>
-          </template>
-          Clear
-        </n-button>
-        <n-button ghost @click="queryFonts">
-          <template #icon>
-            <n-icon>
-              <SearchOutline />
-            </n-icon>
-          </template>
-          Query
-        </n-button>
-      </n-button-group>
-
-      <n-divider />
-
-      <n-data-table :columns="columns" :data="data" :row-key="(row: RowData) => row.key" :loading="loading" striped
-        :expanded-row-keys="expandedRowKeys" @update:expanded-row-keys="rowKeys => expandedRowKeys = rowKeys" />
-    </div>
-    <n-global-style />
-  </n-config-provider>
+  <div id="container" style="justify-items: center;">
+    <form id="upload" :ondrop="onDrop" :ondragover="(evt: DragEvent) => evt.preventDefault()">
+      <input type="file" accept=".ass" multiple id="input" style="display: none;" @change="onInputChange" />
+      <label id="label" for="input">
+        <CloudUploadOutline />
+        <div>Drag and drop ASS files to here to upload.</div>
+      </label>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Required Font</th>
+          <th>File Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="!requiredFonts?.length">
+          <td id="no-data" colspan="2">
+            <CloseOutline />
+            <div>No Data</div>
+          </td>
+        </tr>
+        <template v-else v-for="{ name, providers } of requiredFonts">
+          <tr>
+            <td class="name" colspan="2">{{ name }}</td>
+          </tr>
+          <tr v-for="{ path, size } of providers">
+            <td class="link"><a :href="`https://pan.acgrip.com/超级字体整合包 XZ/完整包/${path}`" target="_blank">{{ path }}</a>
+            </td>
+            <td class="size">{{ (size / 1024 / 1024).toFixed(2) }}MB</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
 </template>
 
-<style scoped>
+<style>
+:root {
+  --border-radius: .5em;
+  --border-color: #ced4da;
+  --bg-color: #f8f9fa;
+  --svg-color: #adb5bd;
+  --primary-color: #845ef7;
+  color: #343a40;
+  font-size: 14px;
+}
+
+svg {
+  width: 3.5em;
+  color: var(--svg-color);
+}
+
+a {
+  color: var(--primary-color);
+}
+
 @media (orientation: landscape) {
-  .container {
+  #container {
     padding: 2em 10em;
   }
 }
 
 @media (orientation: portrait) {
-  .container {
+  #container {
     padding: 2em;
   }
+}
+
+#upload {
+  margin-bottom: 3em;
+  background-color: var(--bg-color);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  width: 25em;
+  height: 9em;
+  overflow: hidden;
+
+  &:hover {
+    border-color: var(--primary-color);
+  }
+}
+
+#label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  height: 100%;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  border-spacing: 0;
+}
+
+#no-data {
+  color: var(--svg-color);
+  text-align: center;
+  padding: 2em;
+  border-top: 1px solid var(--border-color);
+}
+
+th {
+  font-weight: normal;
+  text-align: start;
+  background-color: var(--bg-color);
+
+  &:nth-child(1) {
+    border-right: 1px solid var(--border-color);
+  }
+}
+
+th,
+td {
+  padding: .8em;
+}
+
+.name {
+  border-top: 1px solid var(--border-color);
+}
+
+.link,
+.size {
+  border-top: 1px dashed var(--border-color);
+}
+
+.link {
+  padding-left: 3em;
+  border-right: 1px dashed var(--border-color);
 }
 </style>
