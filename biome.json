@@ -1,5 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "includes": ["**", "!**/*.vue"]
+  },
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,21 +10,13 @@
   },
   "formatter": {
     "indentStyle": "space",
-    "lineWidth": 110,
-    "ignore": [
-      "src/*.vue"
-    ]
+    "lineWidth": 110
   },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
       "semicolons": "asNeeded",
       "arrowParentheses": "asNeeded"
-    }
-  },
-  "json": {
-    "formatter": {
-      "enabled": false
     }
   }
 }
