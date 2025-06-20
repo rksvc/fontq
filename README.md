@@ -3,7 +3,7 @@ Tool for querying fonts used by ASS files, can also match fonts in [超级字体
 ## Build
 
 ```bash
-go run ./preprocess/scan ./font_dir ./fonts.db
-go run ./preprocess/generate ./fonts.db
+go tool scan ./font_dir ./fonts.db
+go tool generate ./fonts.db
 pnpm build
 ```
