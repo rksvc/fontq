@@ -30,9 +30,11 @@ const requiredFonts = computedAsync(async () => {
         }
         usedStyles.add(parts[3].trim())
         for (const match of parts[9].matchAll(/\{.*?\\fn(.*?)(?=\\|\})/g)) {
-          const font = match[1].trim()
+          let font = match[1].trim()
+          if (font.startsWith('@'))
+            font = font.slice('@'.length)
           if (font)
-            usedFonts.add(font.startsWith('@') ? font.slice('@'.length) : font)
+            usedFonts.add(font)
         }
       }
     }
