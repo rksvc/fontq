@@ -7,3 +7,7 @@ go tool scan ./font_dir ./fonts.db
 go tool generate ./fonts.db
 pnpm build
 ```
+
+## Credits
+
+- [fluentui-emoji](https://github.com/microsoft/fluentui-emoji) for icon.
