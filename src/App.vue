@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CloseOutline, CloudUploadOutline } from '@vicons/ionicons5'
+import { CloseOutline, CloudUploadOutline, HelpCircleOutline } from '@vicons/ionicons5'
 import { computedAsync } from '@vueuse/core'
 import { ref } from 'vue'
 import fonts from '../fonts.json'
@@ -9,7 +9,7 @@ const assFiles = ref<File[]>([])
 const requiredFonts = computedAsync(async () => {
   const styleToFont = new Map<string, string>()
   const usedStyles = new Set<string>()
-  const usedFonts = new Set<string>()
+  const usedFonts = new Map<string, [Set<string>, boolean]>()
   for (const file of assFiles.value) {
     const text = await file.text()
     for (const line of text.split('\n')) {
@@ -33,26 +33,45 @@ const requiredFonts = computedAsync(async () => {
           let font = match[1].trim()
           if (font.startsWith('@'))
             font = font.slice('@'.length)
-          if (font)
-            usedFonts.add(font)
+          if (font) {
+            const reverseDeps = usedFonts.get(font)
+            if (reverseDeps)
+              reverseDeps[1] = true
+            else
+              usedFonts.set(font, [new Set(), true])
+          }
         }
       }
     }
   }
   for (const style of usedStyles) {
     const font = styleToFont.get(style)
-    if (font)
-      usedFonts.add(font)
+    if (font) {
+      const reverseDeps = usedFonts.get(font)
+      if (reverseDeps)
+        reverseDeps[0].add(style)
+      else
+        usedFonts.set(font, [new Set([style]), false])
+    }
   }
 
   return [...usedFonts]
-    .toSorted()
-    .map(name => ({
-      name,
-      providers: ((fonts.name_to_idxes as Record<string, number[]>)[name] ?? [])
-        .map(idx => fonts.fonts[idx])
-        .toSorted((a, b) => a.size - b.size)
-    }))
+    .toSorted(([a,], [b,]) => a.localeCompare(b))
+    .map(([name, [reverseDeps, overrideTag]]) => {
+      let tooltip = `Required by ${[...reverseDeps].join(', ')}`
+      if (overrideTag) {
+        if (reverseDeps.size)
+          tooltip += ' and '
+        tooltip += 'override tags'
+      }
+      return {
+        name,
+        tooltip,
+        providers: ((fonts.name_to_idxes as Record<string, number[]>)[name] ?? [])
+          .map(idx => fonts.fonts[idx])
+          .toSorted((a, b) => a.size - b.size)
+      }
+    })
 })
 
 function onDrop(evt: DragEvent) {
@@ -103,9 +122,14 @@ function onInputChange(evt: Event) {
             <div>No Data</div>
           </td>
         </tr>
-        <template v-else v-for="{ name, providers } of requiredFonts">
+        <template v-else v-for="{ name, tooltip, providers } of requiredFonts">
           <tr>
-            <td class="name" colspan="2">{{ name }}</td>
+            <td class="name" colspan="2">
+              {{ name }}
+              <span :title="tooltip" style="vertical-align: middle;">
+                <HelpCircleOutline style="width: 1.2em; color: #1c7ed6;" />
+              </span>
+            </td>
           </tr>
           <tr v-for="{ path, size } of providers">
             <td class="link"><a :href="`https://pan.acgrip.com/超级字体整合包 XZ/完整包/${path}`" target="_blank">{{ path }}</a>
