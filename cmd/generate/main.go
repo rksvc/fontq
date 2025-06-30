@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/text/encoding/charmap"
@@ -106,6 +107,9 @@ func main() {
 			panic(err)
 		}
 		name := string(bytes)
+		if strings.ContainsRune(name, 0) {
+			continue
+		}
 
 		idx, ok := pathToIdx[path]
 		if !ok {
