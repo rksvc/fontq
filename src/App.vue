@@ -7,10 +7,10 @@ import fonts from '../fonts.json'
 const assFiles = ref<File[]>([])
 
 const requiredFonts = computedAsync(async () => {
-  const styleToFont = new Map<string, string>()
-  const usedStyles = new Set<string>()
   const usedFonts = new Map<string, [Set<string>, boolean]>()
   for (const file of assFiles.value) {
+    const styleToFont = new Map<string, string>()
+    const usedStyles = new Set<string>()
     const text = await file.text()
     for (const line of text.split('\n')) {
       if (line.startsWith('Style:')) {
@@ -43,15 +43,15 @@ const requiredFonts = computedAsync(async () => {
         }
       }
     }
-  }
-  for (const style of usedStyles) {
-    const font = styleToFont.get(style)
-    if (font) {
-      const reverseDeps = usedFonts.get(font)
-      if (reverseDeps)
-        reverseDeps[0].add(style)
-      else
-        usedFonts.set(font, [new Set([style]), false])
+    for (const style of usedStyles) {
+      const font = styleToFont.get(style)
+      if (font) {
+        const reverseDeps = usedFonts.get(font)
+        if (reverseDeps)
+          reverseDeps[0].add(style)
+        else
+          usedFonts.set(font, [new Set([style]), false])
+      }
     }
   }
 
