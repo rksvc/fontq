@@ -79,7 +79,10 @@ func main() {
 				panic(err)
 			}
 			for _, entry := range name.List() {
-				if (entry.NameID != sfnt.NameFull && entry.NameID != sfnt.NamePostscript) || len(entry.Value) == 0 {
+				if len(entry.Value) == 0 ||
+					(entry.NameID != sfnt.NameFontFamily &&
+						entry.NameID != sfnt.NameFull &&
+						entry.NameID != sfnt.NamePostscript) {
 					continue
 				}
 				_, err = db.Exec(`
