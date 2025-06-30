@@ -48,7 +48,7 @@ func main() {
 	rows, err := db.Query(`
 		select
 			name.path, platform_id,
-			encoding_id, name_id, name, size
+			encoding_id, name, size
 		from name
 		left join font
 		on name.path = font.path
@@ -58,9 +58,9 @@ func main() {
 	}
 	for rows.Next() {
 		var path string
-		var platformId, encodingId, nameId, size int
+		var platformId, encodingId, size int
 		var rawName []byte
-		err := rows.Scan(&path, &platformId, &encodingId, &nameId, &rawName, &size)
+		err := rows.Scan(&path, &platformId, &encodingId, &rawName, &size)
 		if err != nil {
 			panic(err)
 		}
@@ -128,10 +128,10 @@ func main() {
 		panic(err)
 	}
 
-	result := data{fonts, map[string][]int{}}
+	output := data{fonts, map[string][]int{}}
 	for name, idxes := range nameToIdxes {
 		for idx := range idxes {
-			result.NameToIdxes[name] = append(result.NameToIdxes[name], idx)
+			output.NameToIdxes[name] = append(output.NameToIdxes[name], idx)
 		}
 	}
 	f, err := os.Create("fonts.json")
@@ -139,7 +139,7 @@ func main() {
 		panic(err)
 	}
 	defer f.Close()
-	err = json.NewEncoder(f).Encode(result)
+	err = json.NewEncoder(f).Encode(output)
 	if err != nil {
 		panic(err)
 	}
