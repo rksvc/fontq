@@ -110,6 +110,7 @@ func main() {
 		if strings.ContainsRune(name, 0) {
 			continue
 		}
+		name = strings.ToLower(name)
 
 		idx, ok := pathToIdx[path]
 		if !ok {

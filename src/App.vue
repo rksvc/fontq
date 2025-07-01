@@ -67,7 +67,7 @@ const requiredFonts = computedAsync(async () => {
       return {
         name,
         tooltip,
-        providers: ((fonts.name_to_idxes as Record<string, number[]>)[name] ?? [])
+        providers: ((fonts.name_to_idxes as Record<string, number[]>)[name.toLowerCase()] ?? [])
           .map(idx => fonts.fonts[idx])
           .toSorted((a, b) => a.size - b.size)
       }
