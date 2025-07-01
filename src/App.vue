@@ -132,7 +132,11 @@ function onInputChange(evt: Event) {
             </td>
           </tr>
           <tr v-for="{ path, size } of providers">
-            <td class="link"><a :href="`https://pan.acgrip.com/超级字体整合包 XZ/完整包/${path}`" target="_blank">{{ path }}</a>
+            <td class="link">
+              <a :href="`https://pan.acgrip.com/超级字体整合包 XZ/完整包/${path.split('/').map(comp => encodeURIComponent(comp)).join('/')}`"
+                target="_blank">
+                {{ path }}
+              </a>
             </td>
             <td class="size">{{ (size / 1024 / 1024).toFixed(2) }}MB</td>
           </tr>
