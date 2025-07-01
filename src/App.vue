@@ -68,7 +68,15 @@ const requiredFonts = computedAsync(async () => {
         name,
         tooltip,
         providers: ((fonts.name_to_idxes as Record<string, number[]>)[name.toLowerCase()] ?? [])
-          .map(idx => fonts.fonts[idx])
+          .map(idx => {
+            const { path, size } = fonts.fonts[idx]
+            const i = path.lastIndexOf('/') + 1
+            return {
+              size,
+              name: path.slice(i),
+              path: path.slice(0, i),
+            }
+          })
           .toSorted((a, b) => a.size - b.size)
       }
     })
@@ -131,12 +139,11 @@ function onInputChange(evt: Event) {
               </span>
             </td>
           </tr>
-          <tr v-for="{ path, size } of providers">
+          <tr v-for="{ path, name, size } of providers">
             <td class="link">
-              <a :href="`https://pan.acgrip.com/超级字体整合包 XZ/完整包/${path.split('/').map(comp => encodeURIComponent(comp)).join('/')}`"
-                target="_blank">
-                {{ path }}
-              </a>
+              <a :href="`https://pan.acgrip.com/?dir=超级字体整合包 XZ/完整包/${path.split('/').map(encodeURIComponent).join('/')}`"
+                target="_blank" referrerpolicy="no-referrer">
+                {{ path }}</a>{{ name }}
             </td>
             <td class="size">{{ (size / 1024 / 1024).toFixed(2) }}MB</td>
           </tr>
