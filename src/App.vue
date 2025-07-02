@@ -2,7 +2,7 @@
 import { computedAsync } from '@vueuse/core'
 import { ref } from 'vue'
 import fonts from '../fonts.json'
-import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelIcon } from '@proicons/vue'
+import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelIcon, CancelCircleIcon } from '@proicons/vue'
 
 const assFiles = ref<File[]>([])
 const context = document.createElement('canvas').getContext('2d')!
@@ -140,8 +140,13 @@ function onInputChange(evt: Event) {
           <tr>
             <td class="name" colspan="2">
               {{ name }}
-              <span v-if="installed" title="Installed" class="icon">
-                <CheckmarkCircleIcon color="#37b24d" style="margin-right: .1em;" />
+              <span class="icon" style="margin-right: .1em;">
+                <span v-if="installed" title="Installed">
+                  <CheckmarkCircleIcon color="#37b24d" />
+                </span>
+                <span v-else title="Not installed">
+                  <CancelCircleIcon color="#f03e3e" />
+                </span>
               </span>
               <span :title="tooltip" class="icon">
                 <QuestionCircleIcon color="#1c7ed6" />

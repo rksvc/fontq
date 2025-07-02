@@ -1,4 +1,4 @@
-Tool for querying fonts used by ASS files and finding the corresponding font files in [超级字体整合包 XZ](https://vcb-s.com/archives/1114), also checks if fonts are installed.
+Tool for querying fonts used by ASS files and finding the corresponding font files in [超级字体整合包 XZ](https://vcb-s.com/archives/1114), also checks if required fonts are installed.
 
 ## Build
 
