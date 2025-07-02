@@ -5,11 +5,7 @@ import fonts from '../fonts.json'
 import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelIcon } from '@proicons/vue'
 
 const assFiles = ref<File[]>([])
-
 const context = document.createElement('canvas').getContext('2d')!
-context.font = '16px __DEFAULT__'
-const text = 'A'
-const baseline = context.measureText(text).width
 
 const requiredFonts = computedAsync(async () => {
   const usedFonts = new Map<string, [Set<string>, boolean]>()
@@ -60,6 +56,9 @@ const requiredFonts = computedAsync(async () => {
     }
   }
 
+  context.font = '16px __DEFAULT__'
+  const text = 'A'
+  const baseline = context.measureText(text).width
   return [...usedFonts]
     .toSorted(([a,], [b,]) => a.localeCompare(b))
     .map(([name, [reverseDeps, overrideTag]]) => {
