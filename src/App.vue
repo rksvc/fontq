@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { CloseOutline, CloudUploadOutline, HelpCircleOutline } from '@vicons/ionicons5'
 import { computedAsync } from '@vueuse/core'
 import { ref } from 'vue'
 import fonts from '../fonts.json'
+import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelIcon } from '@proicons/vue'
 
 const assFiles = ref<File[]>([])
+
+const context = document.createElement('canvas').getContext('2d')!
+context.font = '16px __DEFAULT__'
+const text = 'A'
+const baseline = context.measureText(text).width
 
 const requiredFonts = computedAsync(async () => {
   const usedFonts = new Map<string, [Set<string>, boolean]>()
@@ -64,9 +69,11 @@ const requiredFonts = computedAsync(async () => {
           tooltip += ' and '
         tooltip += 'override tags'
       }
+      context.font = `16px '${name}', __DEFAULT__`
       return {
         name,
         tooltip,
+        installed: context.measureText(text).width !== baseline,
         providers: ((fonts.name_to_idxes as Record<string, number[]>)[name.toLowerCase()] ?? [])
           .map(idx => {
             const { path, size } = fonts.fonts[idx]
@@ -112,7 +119,7 @@ function onInputChange(evt: Event) {
     <form id="upload" :ondrop="onDrop" :ondragover="(evt: DragEvent) => evt.preventDefault()">
       <input type="file" accept=".ass" multiple id="input" style="display: none;" @change="onInputChange" />
       <label id="label" for="input">
-        <CloudUploadOutline />
+        <ArrowUploadIcon />
         <div>Drag and drop ASS files to here to upload.</div>
       </label>
     </form>
@@ -126,23 +133,26 @@ function onInputChange(evt: Event) {
       <tbody>
         <tr v-if="!requiredFonts?.length">
           <td id="no-data" colspan="2">
-            <CloseOutline />
+            <CancelIcon />
             <div>No Data</div>
           </td>
         </tr>
-        <template v-else v-for="{ name, tooltip, providers } of requiredFonts">
+        <template v-else v-for="{ name, tooltip, providers, installed } of requiredFonts">
           <tr>
             <td class="name" colspan="2">
               {{ name }}
-              <span :title="tooltip" style="vertical-align: middle;">
-                <HelpCircleOutline style="width: 1.2em; color: #1c7ed6;" />
+              <span v-if="installed" title="Installed" class="icon">
+                <CheckmarkCircleIcon color="#37b24d" style="margin-right: .1em;" />
+              </span>
+              <span :title="tooltip" class="icon">
+                <QuestionCircleIcon color="#1c7ed6" />
               </span>
             </td>
           </tr>
           <tr v-for="{ path, name, size } of providers">
             <td class="link">
-              <a :href="`https://pan.acgrip.com/?dir=超级字体整合包 XZ/完整包/${path.split('/').map(encodeURIComponent).join('/')}`"
-                target="_blank" referrerpolicy="no-referrer">
+              <a :href="`https://pan.acgrip.com/?dir=超级字体整合包 XZ/完整包/${path}`" target="_blank"
+                referrerpolicy="no-referrer">
                 {{ path }}</a>{{ name }}
             </td>
             <td class="size">{{ (size / 1024 / 1024).toFixed(2) }}MB</td>
@@ -154,18 +164,25 @@ function onInputChange(evt: Event) {
 </template>
 
 <style>
+/* modified from https://stackoverflow.com/a/51481693 */
+@font-face {
+  font-family: '__DEFAULT__';
+  src: url('data:application/font-woff2;base64,d09GMgABAAAAAAK4AA0AAAAABwQAAAJlAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGhgGYACCQhEICjBECwoAATYCJAMQBCAFhlEHKhsmBmCO0UvPmFPmhBNKmBAyImqN7NnbJ9LAQhI7wICQYZWKDBvNmj2BUGEZo+Iejt/P3aQND+na/M1Eqn+1SSJSSQsRScVTo2HUmeOhYAC/pVAMYvK+eg8lv0j6kbQiBQlYsLVSuVRswWoFrGkH3SWfA9AqBP79+Y0A/t5u/f9u2vEk6EY/UFBR0LiQZy20PGiJgQwO72++o8sDKFp4DJu7iFBWEWyPcAUgIIIxNjRoMMQGljkEQ5zGgKoKNk5Pny+ffmUD0koAKSiM5sJfbyz3yumpAipoR0E7OgEVBKTW7nQ562tXtuz6sQBBuHn9ZbS6zf9vd7XTKuLJRc8VoH2ZICIuIG+V+LwikQsAkEVp91Mo9PtgY9P4CVE9Q9HmIxoD/lDVtKLFQh7Rqubbik7rpcshtQNXgAHR7imKXq/RmPCBqt0RWtyIC63a8+bZOt3Pl7kzFYW2sUNB78Z4nCksOrSjkKg2ZGdeBIoKi0gjUIVIhKY4DJbJgKYoBorugLIHNpDl8SDv6LF9XIug8pK/4nLdVc6aRpvgVwPsGxlqgP2DYQPgLArDItrQQcVmPr4LZC1RdAaOQoYiiLAwDWk2tHM8QsJh2vciS3K6bJ4/Q1ExARkgOU3sv2Kq0VE2TAodioggEogwIiouKgUlxQVtcUzAoSgXb0yisYCERLl8om5uvyCCIUjsLyfReDSFyXhwy5m8l89jcQzRPJrQ0QYq3/HNUgqCLFFKMuYg/k+IpmsBhtpKvBzUp2BwdogGicE5tBy3efjQ8TtsFYwVJrSyh8bBfL6Wo+XbjadP3S7bUBFs0RQA');
+}
+
 :root {
   --border-radius: .5em;
   --border-color: #ced4da;
   --bg-color: #f8f9fa;
   --svg-color: #adb5bd;
   --primary-color: #845ef7;
-  color: #343a40;
+  color: #495057;
   font-size: 14px;
 }
 
 svg {
-  width: 3.5em;
+  width: 2.8em;
+  height: 2.8em;
   color: var(--svg-color);
 }
 
@@ -251,5 +268,14 @@ td {
 .link {
   padding-left: 3em;
   border-right: 1px dashed var(--border-color);
+}
+
+.icon {
+  vertical-align: middle;
+
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+  }
 }
 </style>
