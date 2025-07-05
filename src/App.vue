@@ -2,7 +2,7 @@
 import { computedAsync } from '@vueuse/core'
 import { ref } from 'vue'
 import fonts from '../fonts.json'
-import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelIcon, CancelCircleIcon } from '@proicons/vue'
+import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelIcon, CancelCircleIcon, CopyIcon, CheckmarkIcon } from '@proicons/vue'
 
 const assFiles = ref<File[]>([])
 const context = document.createElement('canvas').getContext('2d')!
@@ -111,6 +111,12 @@ function onInputChange(evt: Event) {
     files.push(input.files[i])
   assFiles.value = files
 }
+
+const copied = ref('')
+function copy(name: string) {
+  navigator.clipboard.writeText(name)
+  copied.value = name
+}
 </script>
 
 <template>
@@ -155,9 +161,13 @@ function onInputChange(evt: Event) {
           </tr>
           <tr v-for="{ path, name, size } of providers">
             <td class="link">
-              <a :href="`https://pan.acgrip.com/?dir=超级字体整合包 XZ/完整包/${path}`" target="_blank"
-                referrerpolicy="no-referrer">
-                {{ path }}</a>{{ name }}
+              <a :href="`https://pan.acgrip.com/?dir=超级字体整合包 XZ/完整包/${path}`" target="_blank">
+                {{ path }}</a><span>{{ name }}</span>
+              <span class="icon copy" style="margin-left: .15em; cursor: pointer;" @click="copy(name)"
+                @mouseleave="copied = ''">
+                <CheckmarkIcon v-if="copied === name" color="#37b24d" />
+                <CopyIcon v-else color="#1c7ed6" />
+              </span>
             </td>
             <td class="size">{{ (size / 1024 / 1024).toFixed(2) }}MB</td>
           </tr>
@@ -281,5 +291,9 @@ td {
     width: 1.1em;
     height: 1.1em;
   }
+}
+
+span:has(+ .copy:hover) {
+  text-decoration: underline;
 }
 </style>
