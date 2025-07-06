@@ -163,7 +163,7 @@ function copy(name: string) {
             <td class="link">
               <a :href="`https://pan.acgrip.com/?dir=超级字体整合包 XZ/完整包/${path}`" target="_blank">
                 {{ path }}</a><span>{{ name }}</span>
-              <span class="icon copy" style="margin-left: .15em; cursor: pointer;" @click="copy(name)"
+              <span class="icon copy" title="Copy" style="margin-left: .15em; cursor: pointer;" @click="copy(name)"
                 @mouseleave="copied = ''">
                 <CheckmarkIcon v-if="copied === name" color="#37b24d" />
                 <CopyIcon v-else color="#1c7ed6" />
