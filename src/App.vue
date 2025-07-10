@@ -120,7 +120,7 @@ function copy(name: string) {
 </script>
 
 <template>
-  <div id="container" style="justify-items: center;">
+  <div style="justify-items: center; padding: 2em;">
     <form id="upload" :ondrop="onDrop" :ondragover="(evt: DragEvent) => evt.preventDefault()">
       <input type="file" accept=".ass" multiple id="input" style="display: none;" @change="onInputChange" />
       <label id="label" for="input">
@@ -209,25 +209,11 @@ a {
   color: var(--primary-color);
 }
 
-@media (orientation: landscape) {
-  #container {
-    padding: 2em 10em;
-  }
-}
-
-@media (orientation: portrait) {
-  #container {
-    padding: 2em;
-  }
-}
-
 #upload {
   margin-bottom: 3em;
   background-color: var(--bg-color);
   border: 1px dashed var(--border-color);
   border-radius: var(--border-radius);
-  width: 25em;
-  height: 9em;
   overflow: hidden;
 
   &:hover {
@@ -241,12 +227,11 @@ a {
   align-items: center;
   justify-content: center;
   gap: 1em;
-  height: 100%;
+  padding: 1.7em 2em;
   cursor: pointer;
 }
 
 table {
-  width: 100%;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   overflow: hidden;
