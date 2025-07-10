@@ -120,7 +120,7 @@ async function copy(name: string) {
 </script>
 
 <template>
-  <div style="justify-items: center; padding: 2em;">
+  <div style="justify-items: center; padding: 2em; width: fit-content; place-self: center;">
     <form id="upload" :ondrop="onDrop" :ondragover="(evt: DragEvent) => evt.preventDefault()">
       <input type="file" accept=".ass" multiple id="input" style="display: none;" @change="onInputChange" />
       <label id="label" for="input">
@@ -128,7 +128,7 @@ async function copy(name: string) {
         <div>Drag and drop ASS files to here to upload.</div>
       </label>
     </form>
-    <table>
+    <table style="min-width: 100%;">
       <thead>
         <tr>
           <th>Required Font</th>
