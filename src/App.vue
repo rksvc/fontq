@@ -113,8 +113,8 @@ function onInputChange(evt: Event) {
 }
 
 const copied = ref('')
-function copy(name: string) {
-  navigator.clipboard.writeText(name)
+async function copy(name: string) {
+  await navigator.clipboard.writeText(name)
   copied.value = name
 }
 </script>
