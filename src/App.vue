@@ -148,14 +148,14 @@ function copy(name: string) {
               {{ name }}
               <span class="icon" style="margin-right: .1em;">
                 <span v-if="installed" title="Installed">
-                  <CheckmarkCircleIcon color="#37b24d" />
+                  <CheckmarkCircleIcon color="var(--icon-green)" />
                 </span>
                 <span v-else title="Not installed">
-                  <CancelCircleIcon color="#f03e3e" />
+                  <CancelCircleIcon color="var(--icon-red)" />
                 </span>
               </span>
               <span :title="tooltip" class="icon">
-                <QuestionCircleIcon color="#1c7ed6" />
+                <QuestionCircleIcon color="var(--icon-blue)" />
               </span>
             </td>
           </tr>
@@ -165,8 +165,8 @@ function copy(name: string) {
                 {{ path }}</a><span>{{ name }}</span>
               <span class="icon copy" title="Copy" style="margin-left: .15em; cursor: pointer;" @click="copy(name)"
                 @mouseleave="copied = ''">
-                <CheckmarkIcon v-if="copied === name" color="#37b24d" />
-                <CopyIcon v-else color="#1c7ed6" />
+                <CheckmarkIcon v-if="copied === name" color="var(--icon-green)" />
+                <CopyIcon v-else color="var(--icon-blue)" />
               </span>
             </td>
             <td class="size">{{ (size / 1024 / 1024).toFixed(2) }}MB</td>
@@ -185,12 +185,17 @@ function copy(name: string) {
 }
 
 :root {
+  color-scheme: light dark;
+  --icon-red: light-dark(#f03e3e, #ff6b6b);
+  --icon-green: light-dark(#37b24d, #51cf66);
+  --icon-blue: light-dark(#1c7ed6, #339af0);
   --border-radius: .5em;
-  --border-color: #ced4da;
-  --bg-color: #f8f9fa;
-  --svg-color: #adb5bd;
-  --primary-color: #845ef7;
-  color: #495057;
+  --border-color: light-dark(#ced4da, #868e96);
+  --bg-color: light-dark(#f8f9fa, #343a40);
+  --svg-color: light-dark(#adb5bd, #868e96);
+  --primary-color: light-dark(#845ef7, #b197fc);
+  color: light-dark(#495057, #dee2e6);
+  background-color: light-dark(white, #212529);
   font-size: 14px;
 }
 
