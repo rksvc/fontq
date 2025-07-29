@@ -2,7 +2,7 @@
 import { computedAsync } from '@vueuse/core'
 import { ref } from 'vue'
 import fonts from '../fonts.json'
-import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelIcon, CancelCircleIcon, CopyIcon, CheckmarkIcon } from '@proicons/vue'
+import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelCircleIcon, CopyIcon, CheckmarkIcon } from '@proicons/vue'
 
 const assFiles = ref<File[]>([])
 const context = document.createElement('canvas').getContext('2d')!
@@ -120,7 +120,7 @@ async function copy(name: string) {
 </script>
 
 <template>
-  <div style="justify-items: center; padding: 2em; width: fit-content; place-self: center;">
+  <div style="padding: 2em; place-self: center;">
     <form id="upload" :ondrop="onDrop" :ondragover="(evt: DragEvent) => evt.preventDefault()">
       <input type="file" accept=".ass" multiple id="input" style="display: none;" @change="onInputChange" />
       <label id="label" for="input">
@@ -128,52 +128,41 @@ async function copy(name: string) {
         <div>Drag and drop ASS files to here to upload.</div>
       </label>
     </form>
-    <table style="min-width: 100%;">
-      <thead>
-        <tr>
-          <th>Required Font</th>
-          <th>File Size</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="!requiredFonts?.length">
-          <td id="no-data" colspan="2">
-            <CancelIcon />
-            <div>No Data</div>
-          </td>
-        </tr>
-        <template v-else v-for="{ name, tooltip, providers, installed } of requiredFonts">
-          <tr>
-            <td class="name" colspan="2">
-              {{ name }}
-              <span class="icon" style="margin-right: .1em;">
-                <span v-if="installed" title="Installed">
-                  <CheckmarkCircleIcon color="var(--icon-green)" />
+    <template v-for="{ name, tooltip, providers, installed } of requiredFonts">
+      <div style="margin-top: .7em; margin-bottom: .3em">
+        {{ name }}
+        <span class="icon" style="margin-right: .1em;">
+          <span v-if="installed" title="Installed">
+            <CheckmarkCircleIcon color="var(--icon-green)" />
+          </span>
+          <span v-else title="Not installed">
+            <CancelCircleIcon color="var(--icon-red)" />
+          </span>
+        </span>
+        <span :title="tooltip" class="icon">
+          <QuestionCircleIcon color="var(--icon-blue)" />
+        </span>
+      </div>
+      <div v-if="providers.length" style="display: flex; align-items: flex-start;">
+        <div class="corner"></div>
+        <table>
+          <tbody>
+            <tr v-for="{ path, name, size } of providers">
+              <td>
+                <a :href="`https://pan.acgrip.com/?dir=超级字体整合包 XZ/完整包/${path}`" target="_blank">
+                  {{ path }}</a><span>{{ name }}</span>
+                <span class="icon copy" title="Copy" style="margin-left: .15em; cursor: pointer;" @click="copy(name)"
+                  @mouseleave="copied = ''">
+                  <CheckmarkIcon v-if="copied === name" color="var(--icon-green)" />
+                  <CopyIcon v-else color="var(--icon-blue)" />
                 </span>
-                <span v-else title="Not installed">
-                  <CancelCircleIcon color="var(--icon-red)" />
-                </span>
-              </span>
-              <span :title="tooltip" class="icon">
-                <QuestionCircleIcon color="var(--icon-blue)" />
-              </span>
-            </td>
-          </tr>
-          <tr v-for="{ path, name, size } of providers">
-            <td class="link">
-              <a :href="`https://pan.acgrip.com/?dir=超级字体整合包 XZ/完整包/${path}`" target="_blank">
-                {{ path }}</a><span>{{ name }}</span>
-              <span class="icon copy" title="Copy" style="margin-left: .15em; cursor: pointer;" @click="copy(name)"
-                @mouseleave="copied = ''">
-                <CheckmarkIcon v-if="copied === name" color="var(--icon-green)" />
-                <CopyIcon v-else color="var(--icon-blue)" />
-              </span>
-            </td>
-            <td class="size">{{ (size / 1024 / 1024).toFixed(2) }}MB</td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
+              </td>
+              <td>{{ (size / 1024 / 1024).toFixed(2) }}MB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -197,6 +186,10 @@ async function copy(name: string) {
   color: light-dark(#495057, #dee2e6);
   background-color: light-dark(white, #212529);
   font-size: 14px;
+}
+
+*::selection {
+  background-color: light-dark(#d0bfff, #9775fa);
 }
 
 svg {
@@ -231,6 +224,15 @@ a {
   cursor: pointer;
 }
 
+.corner {
+  width: 1.5em;
+  height: 1.5em;
+  margin-left: 1em;
+  border-left: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  border-bottom-left-radius: .8em;
+}
+
 table {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
@@ -238,40 +240,16 @@ table {
   border-spacing: 0;
 }
 
-#no-data {
-  color: var(--svg-color);
-  text-align: center;
-  padding: 2em;
-  border-top: 1px solid var(--border-color);
-}
-
-th {
-  font-weight: normal;
-  text-align: start;
-  background-color: var(--bg-color);
-
-  &:nth-child(1) {
-    border-right: 1px solid var(--border-color);
-  }
-}
-
-th,
 td {
-  padding: .8em;
+  padding: .6em;
 }
 
-.name {
+tr:not(:first-child) td {
   border-top: 1px solid var(--border-color);
 }
 
-.link,
-.size {
-  border-top: 1px dashed var(--border-color);
-}
-
-.link {
-  padding-left: 3em;
-  border-right: 1px dashed var(--border-color);
+td:not(:last-child) {
+  border-right: 1px solid var(--border-color);
 }
 
 .icon {
