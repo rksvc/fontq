@@ -180,8 +180,6 @@ async function copy(name: string) {
   --icon-blue: light-dark(#1c7ed6, #339af0);
   --border-radius: .5em;
   --border-color: light-dark(#ced4da, #868e96);
-  --bg-color: light-dark(#f8f9fa, #343a40);
-  --svg-color: light-dark(#adb5bd, #868e96);
   --primary-color: light-dark(#845ef7, #b197fc);
   color: light-dark(#495057, #dee2e6);
   background-color: light-dark(white, #212529);
@@ -192,25 +190,23 @@ async function copy(name: string) {
   background-color: light-dark(#d0bfff, #9775fa);
 }
 
-svg {
-  width: 2.8em;
-  height: 2.8em;
-  color: var(--svg-color);
-}
-
-a {
-  color: var(--primary-color);
-}
-
 #upload {
+  width: fit-content;
+  place-self: center;
   margin-bottom: 3em;
-  background-color: var(--bg-color);
+  background-color: light-dark(#f8f9fa, #343a40);
   border: 1px dashed var(--border-color);
   border-radius: var(--border-radius);
   overflow: hidden;
 
   &:hover {
     border-color: var(--primary-color);
+  }
+
+  svg {
+    width: 2.8em;
+    height: 2.8em;
+    color: light-dark(#adb5bd, #868e96);
   }
 }
 
@@ -250,6 +246,10 @@ tr:not(:first-child) td {
 
 td:not(:last-child) {
   border-right: 1px solid var(--border-color);
+}
+
+a {
+  color: var(--primary-color);
 }
 
 .icon {
