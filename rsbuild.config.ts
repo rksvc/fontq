@@ -4,7 +4,7 @@ import { pluginVue } from '@rsbuild/plugin-vue'
 
 export default defineConfig({
   html: {
-    title: 'FontQ - Show Fonts Required by ASS Files',
+    title: 'FontQ',
     inject: 'body',
   },
   output: {

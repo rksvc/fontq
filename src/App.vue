@@ -2,7 +2,7 @@
 import { computedAsync } from '@vueuse/core'
 import { ref } from 'vue'
 import fonts from '../fonts.json'
-import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelCircleIcon, CopyIcon, CheckmarkIcon } from '@proicons/vue'
+import { CheckmarkCircleIcon, QuestionCircleIcon, ArrowUploadIcon, CancelCircleIcon, CopyIcon, CheckmarkIcon, CancelIcon } from '@proicons/vue'
 
 const assFiles = ref<File[]>([])
 const context = document.createElement('canvas').getContext('2d')!
@@ -121,14 +121,18 @@ async function copy(name: string) {
 
 <template>
   <div style="padding: 2em; place-self: center;">
-    <form id="upload" :ondrop="onDrop" :ondragover="(evt: DragEvent) => evt.preventDefault()">
+    <form id="upload" class="box" :ondrop="onDrop" :ondragover="(evt: DragEvent) => evt.preventDefault()">
       <input type="file" accept=".ass" multiple id="input" style="display: none;" @change="onInputChange" />
-      <label id="label" for="input">
+      <label class="label" for="input" style="cursor: pointer;">
         <ArrowUploadIcon />
         <div>Drag and drop ASS files to here to upload.</div>
       </label>
     </form>
-    <template v-for="{ name, tooltip, providers, installed } of requiredFonts">
+    <div class="label box" style="border: 1px dotted var(--border-color);" v-if="!requiredFonts?.length">
+      <CancelIcon />
+      <div>No Required Fonts</div>
+    </div>
+    <template v-else v-for="{ name, tooltip, providers, installed } of requiredFonts">
       <div style="margin-top: .7em; margin-bottom: .3em">
         {{ name }}
         <span class="icon" style="margin-right: .1em;">
@@ -191,33 +195,32 @@ async function copy(name: string) {
 }
 
 #upload {
-  width: fit-content;
-  place-self: center;
-  margin-bottom: 3em;
-  background-color: light-dark(#f8f9fa, #343a40);
   border: 1px dashed var(--border-color);
-  border-radius: var(--border-radius);
-  overflow: hidden;
 
   &:hover {
     border-color: var(--primary-color);
   }
+}
+
+.box {
+  place-self: center;
+  margin-bottom: 3em;
+  background-color: light-dark(#f8f9fa, #343a40);
+  border-radius: var(--border-radius);
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  padding: 1.7em 2em;
 
   svg {
     width: 2.8em;
     height: 2.8em;
     color: light-dark(#adb5bd, #868e96);
   }
-}
-
-#label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1em;
-  padding: 1.7em 2em;
-  cursor: pointer;
 }
 
 .corner {
@@ -232,7 +235,6 @@ async function copy(name: string) {
 table {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  overflow: hidden;
   border-spacing: 0;
 }
 
