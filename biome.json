@@ -1,8 +1,5 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "files": {
-    "includes": ["**", "!**/*.vue"]
-  },
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -11,6 +8,20 @@
   "formatter": {
     "indentStyle": "space",
     "lineWidth": 110
+  },
+  "linter": {
+    "domains": {
+      "project": "recommended",
+      "react": "recommended"
+    },
+    "rules": {
+      "a11y": {
+        "recommended": false
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      }
+    }
   },
   "javascript": {
     "formatter": {
