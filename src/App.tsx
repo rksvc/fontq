@@ -29,7 +29,6 @@ export default function App() {
   >([])
 
   useEffect(() => {
-    // biome-ignore lint/nursery/noFloatingPromises: expected
     ;(async () => {
       const usedFonts = new Map<string, [Set<string>, boolean]>()
       for (const file of assFiles) {
