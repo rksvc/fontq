@@ -208,7 +208,7 @@ export default function App() {
           </div>
         ))
       ) : (
-        <div className="label box" style={{ border: '1px dotted var(--border-color)' }}>
+        <div className="label box" style={{ border: '1px dashed var(--border-color)' }}>
           <CancelIcon />
           <div>No Required Fonts</div>
         </div>
