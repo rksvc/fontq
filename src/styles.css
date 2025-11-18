@@ -21,6 +21,10 @@
   background-color: light-dark(#d0bfff, #9775fa);
 }
 
+svg {
+  stroke-width: 1.5;
+}
+
 #upload {
   border: 1px dashed var(--border-color);
 
@@ -85,8 +89,8 @@ a {
   vertical-align: middle;
 
   svg {
-    width: 1.1em;
-    height: 1.1em;
+    width: 1.05em;
+    height: 1.05em;
   }
 }
 

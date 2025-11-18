@@ -2,6 +2,7 @@
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "target": "ES2020",
     "noEmit": true,
     "skipLibCheck": true,

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { defineConfig, type RsbuildPlugin } from '@rsbuild/core'
-import { pluginReact } from '@rsbuild/plugin-react'
+import { pluginPreact } from '@rsbuild/plugin-preact'
 
 export default defineConfig({
   html: {
@@ -14,7 +14,7 @@ export default defineConfig({
     inlineStyles: true,
   },
   plugins: [
-    pluginReact(),
+    pluginPreact(),
     {
       name: 'plugin-inline-favicon',
       setup(api) {
