@@ -3,7 +3,7 @@ Tool for querying fonts required by ASS files and finding the corresponding font
 ## Build
 
 ```bash
-go tool scan ./font_dir ./fonts.db
+go tool scan './超级字体整合包 XZ/完整包' ./fonts.db
 go tool generate ./fonts.db
 pnpm build
 ```
