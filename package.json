@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "biome check",
+    "lint": "tsc && biome check",
     "build": "rsbuild build",
     "dev": "rsbuild dev"
   },
